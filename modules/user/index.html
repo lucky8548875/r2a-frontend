@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>R2A - Dashboard</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body class="body">
+
+  <main id="app" v-cloak>
+
+    <div class="tab_control">
+      <div class="tab_control__tab_container">
+        <ul class="h-unstyle-list h-unstyle-links">
+          <li>
+            <a class="tab_control__tab" href="/modules/switch/index.html">
+              <i class="material-icons">toggle_on</i>
+              <span>Switch</span>
+            </a>
+          </li>
+          <li>
+            <a class="tab_control__tab tab_control__tab--active" href="/modules/user/index.html">
+              <i class="material-icons">people</i>
+              <span>User</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="tab_control__page" :class="sidebarSync ? 'tab_control__page--sidebar_shown' : ''">
+        <nav class="nav">
+          <div class="nav__top">
+            <div>
+              <h3 class="nav__title">
+                <button class="nav__menu" @click="sidebarSync = !sidebarSync">
+                  <i class="material-icons">menu</i>
+                </button>
+                Users</h3>
+            </div>
+            <div class="nav__account" style="padding: 0">
+                <div class="nav__photo"></div>
+                <h4 class="nav__user">{{ name }} &nbsp; </h4>
+                <i class="material-icons" @click="logout()">
+                  power_settings_new
+                </i>
+              </div>
+          </div>
+          <div class="nav__bottom">
+            <div>
+              <label for="search">
+                <i class="material-icons">search</i>
+              </label>
+
+              <input type="search" name="search" id="search" class="nav__search" placeholder="Search.." v-model="search_filter">
+
+            </div>
+            <div>
+
+              <button class="button button--primary button--responsive" @click="addModalSync = true">
+                <i class="material-icons">person_add</i>
+                <span>
+                  New user
+                </span>
+              </button>
+            </div>
+          </div>
+        </nav>
+        <section class="main_section">
+          <div class="search_cue" v-if="search_filter">Showing <b>{{filtered_users.length}}</b> result(s) for <b>{{search_filter}}</b></div>
+          <div>
+
+            <transition-group name="slide-up" tag="div" class="main_grid">
+              <div @click="viewUser(user._id); editModalSync = true" class="user_item" v-for="user in filtered_users"
+                :key="user._id">
+                <div class="user_item__photo" :style="`background: url('${user.photo}')`">
+                </div>
+                <div>
+
+                  <h4>{{ user.name }}</h4>
+                  <span>{{ user.email }}</span>
+                  <h4 style="opacity: 0.5;">{{ user.type }}</h4>
+                  <div :style="{color: user.active ? '#20cf9a' : '#dd4444'}" style="display: flex; align-items: center; font-weight: bold">
+                    <i class="material-icons">toggle_on</i>
+                    <span style="margin-left: 0.25rem">{{ user.active ? 'Active' : 'Blocked' }}</span>
+
+                  </div>
+                </div>
+              </div>
+            </transition-group>
+
+          </div>
+        </section>
+
+      </div>
+    </div>
+    <transition name="fade" appear>
+      <div class="modal_group" v-if="addModalSync">
+        <transition name="scale" appear>
+          <div class="modal_group__modal">
+            <form @submit.prevent="addUser(); addModalSync = false;;">
+              <div class="modal_group__header">
+                <h3>New User</h3>
+                <a class="button button--marginless" @click="addModalSync = false">
+                  <i class="material-icons">
+                    close
+                  </i>
+                  <span>Close</span>
+                </a>
+              </div>
+              <div class="modal_group__body">
+
+                <div class="input_group">
+                  <label for="username" class="input_group__label">
+                    Account type
+                  </label>
+                  <select class="input_group__input" id="type" v-model="selected_user.type" required>
+                    <option value="User">User</option>
+                    <option value="Administrator">Administrator</option>
+                  </select>
+                </div>
+                <div class="input_group">
+                  <label for="name" class="input_group__label">
+                    Full name
+                  </label>
+                  <input type="text" class="input_group__input" id="name" placeholder="Juan Dela Cruz" v-model="selected_user.name"
+                    required>
+                </div>
+                <div class="input_group">
+                  <label for="email" class="input_group__label">
+                    Email
+                  </label>
+                  <input type="email" class="input_group__input" id="email" placeholder="juandelacruz@abs-cbn.com"
+                    v-model="selected_user.email" required>
+                </div>
+                <div class="input_group">
+                  <label for="department" class="input_group__label">
+                    Department
+                  </label>
+                  <input type="text" class="input_group__input" id="department" placeholder="DCIT Department" v-model="selected_user.department"
+                    required>
+                </div>
+                <div class="input_group">
+                  <label for="username" class="input_group__label">
+                    Username
+                  </label>
+                  <input type="text" class="input_group__input" id="username" placeholder="jdelacruz" v-model="selected_user.username"
+                    required>
+                </div>
+                <div class="input_group">
+                  <label for="password" class="input_group__label">
+                    Password
+                  </label>
+                  <input type="password" class="input_group__input" id="password" placeholder="********" v-model="selected_user.password"
+                    required>
+                </div>
+
+
+              </div>
+              <div class="modal_group__footer">
+                <div></div>
+                <div>
+                  <button type="submit" class="button button--primary" style="margin-top: 1rem">Create new user</button>
+                </div>
+
+              </div>
+            </form>
+          </div>
+        </transition>
+      </div>
+    </transition>
+    <transition name="fade">
+      <div class="modal_group" v-if="editModalSync">
+        <transition name="scale" appear>
+          <div class="modal_group__modal">
+            <div class="modal_group__header">
+              <div></div>
+              <a class="button button--marginless" @click="editModalSync = false">
+                <i class="material-icons">
+                  close
+                </i>
+                <span>Close</span>
+              </a>
+            </div>
+            <div class="modal_group__body">
+
+              <div class="user_modal">
+                <div class="user_modal__photo"></div>
+                <h3>{{selected_user.name}}</h3>
+                <span>{{selected_user.type}}</span>
+                <table class="user_modal__table">
+                  <tr>
+                    <th>
+                      <i class="material-icons">alternate_email</i>
+                    </th>
+                    <td>{{selected_user.email}}</td>
+                  </tr>
+                  <tr>
+                    <th>
+                      <i class="material-icons">account_balance</i>
+                    </th>
+                    <td>{{selected_user.department}}</td>
+                  </tr>
+                  <tr>
+                    <th>
+                      <i class="material-icons">toggle_on</i>
+                    </th>
+                    <td>{{selected_user.active ? 'Active' : 'Blocked'}}</td>
+                  </tr>
+                </table>
+              </div>
+
+
+            </div>
+            <div class="modal_group__footer">
+              <div></div>
+              <div style="display: flex; align-items: center">
+                <button @click="blockUser(selected_user._id); editModalSync = false" v-if="selected_user.active" type="reset"
+                  class="button button--control" style="margin-top: 1rem">
+                  <i class="material-icons">block</i>
+                  <span>Block</span>
+                </button>
+                <button v-else @click="unblockUser(selected_user._id); editModalSync = false" type="reset" class="button button--control"
+                  style="margin-top: 1rem">
+                  <i class="material-icons">lock_open</i>
+                  <span>Unblock user</span>
+                </button>
+
+                <button v-if="selected_user.type == 'User' && selected_user.active" @click="makeAdmin(selected_user._id); editModalSync = false"
+                  type="reset" class="button button--control" style="margin-top: 1rem">
+                  <i class="material-icons">verified_user</i>
+                  <span>Make Administrator</span>
+                </button>
+                <button v-else-if="selected_user.active" type="reset" @click="makeUser(selected_user._id); editModalSync = false"
+                  class="button button--control" style="margin-top: 1rem">
+                  <i class="material-icons">account_circle</i>
+                  <span>Make User</span>
+                </button>
+                <button type="reset" @click="deleteUser(selected_user._id); editModalSync = false" class="button button--control"
+                  style="margin-top: 1rem">
+                  <i class="material-icons">delete</i>
+                  <span>Delete</span>
+                </button>
+              </div>
+        </transition>
+      </div>
+    </transition>
+    </div>
+  </main>
+
+  <script src="./app.js" type="module"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,1000 @@
+// Debugger
+// *
+//   outline: 1px dashed cornflowerblue
+//   outline-offset: -1px
+//   color: white
+//   background-color: rgba(0,0,0,0.8) !important
+
+//======================================= RESPONSIVE =======================================
+
+$mobile: (start: 0px, end: 599px)
+$tablet: (start: 600px, end: 1023px)
+$desktop: (start: 1024px, end: 1439px)
+$hd: (start: 1440px, end: 1920px)
+
+@mixin from($breakpoint)
+  @media screen and (min-width: map-get($breakpoint, start))
+    @content
+
+@mixin to($breakpoint)
+  @media screen and (max-width: map-get($breakpoint, end))
+    @content
+
+
+//======================================= Variables =======================================
+$z-modal: 100
+
+// Variables
+$color-text: #444444
+$color-background: #f7f5ff
+$color-surface: #ffffff
+$color-control: #595959
+
+$color-primary: #20cf9a
+
+//======================================= BASE =======================================
+[v-cloak]
+  display: none
+  
+*
+  box-sizing: border-box
+  padding: unset
+  margin: unset
+
+.body
+  margin: 0
+  font-family: 'Open Sans', sans-serif
+  background-color: $color-background
+  color: $color-text
+  font-size: 0.925em
+
+
+
+//======================================= HELPERS =======================================
+
+// GENEROUS HELPERS
+.h-unstyle-list
+  padding: 0
+  margin: 0
+  list-style-type: none
+
+.h-unstyle-links
+  &, & *
+    text-decoration: none
+    color: inherit
+
+//======================================= DISPLAY COMPONENTS =======================================
+// card, // button
+.card
+  border-radius: 10px
+  background-color: $color-surface
+  box-shadow: 0px 2px 2px rgba(0,0,0,0.05)
+
+  &--radiusless
+    @extend .card
+    border-radius: 0
+
+.button
+  padding: 0.5rem 1rem
+  margin: 0.25rem 0rem
+  border-radius: 5rem
+  border: none
+  font: inherit
+  cursor: pointer
+  outline: none
+  display: flex
+  position: relative
+  align-items: center
+  background-color: transparent
+  border: 1px solid rgba(0,0,0,0.1)
+
+  &:hover
+    border-color: rgba(0,0,0,0.2)
+
+  i + span
+    margin-left: 0.5rem
+
+  input + i
+    position: absolute
+    right: 1.25rem
+
+  &--responsive
+    span
+      @include to($mobile)
+        display: none !important
+
+  
+  &--control
+    background-color: transparent
+    color: $color-control
+    border: none
+
+    &:hover
+      color: $color-text
+
+  &--primary
+    background-color: $color-primary
+    color: white
+    font-weight: bold
+    border: none
+
+  &--marginless
+    margin: 0
+  &--paddingless
+    padding: 0
+//======================================= CUSTOM COMPONENTS =======================================
+
+// USER MODAL TABLE
+.user_modal__table
+  margin-top: 1rem
+  border: 1px solid rgba(0,0,0,0.1)
+  padding: 2rem
+  border-radius: 10px
+  th
+    padding-right: 1rem
+    color: $color-control
+  td
+    display: flex
+    align-items: center
+// INPUT GROUP
+.input_group
+  margin-top: 1rem
+  position: relative
+
+  &:focus-within &__label
+    color: $color-primary
+    
+  &__label
+    font-weight: bold
+    font-size: 0.8em
+    position: absolute
+    -webkit-transform: translate(0.25rem, 0.5rem)
+    transform: translate(0.25rem, 0.5rem)
+    padding: 0rem 0.5rem
+    color: $color-control
+  &__input
+    padding: 1.75rem 0.75rem 0.5rem
+    border: none
+    width: 100%
+    border-radius: 10px
+    background-color: $color-background
+    outline: none
+    font: inherit
+    color: inherit
+
+    &::placeholder
+      opacity: 0.5
+
+// MODAL
+.modal_group
+  position: absolute
+  top: 0
+  left: 0
+  z-index: $z-modal
+  width: 100%
+  height: 100%
+  display: flex
+  background-color: rgba(0,0,0,0.3)
+  overflow: auto
+  
+
+  &__modal
+    @extend .card
+    padding: 1rem
+    margin: 1rem
+    width: calc(100% - 2rem)
+    max-height: 100%
+    overflow: auto
+
+    @include from($tablet)
+      max-width: 30rem
+      margin: auto
+
+  &__header, &__footer
+    display: flex
+    align-items: center
+    justify-content: space-between
+
+
+// TAB CONTROL
+.tab_control
+  display: grid
+  height: 100vh
+  grid-template-columns: 1fr
+  @include from($tablet)
+    grid-template-columns: auto 1fr
+
+  // __children
+  &__tab_container
+
+    // --mobile
+    position: fixed
+    width: 100% // CHECK
+    height: 100%  // CHECK
+    z-index: 1
+
+    // --tablet+
+    @include from($tablet)
+      position: relative
+    
+
+    // update later
+    background-color: $color-primary
+    
+
+  &__tab
+    padding: 1rem
+    display: block
+
+    // --tablet+
+    display: flex
+    align-items: center
+
+    span
+      @include to($mobile)
+        margin-left: 0.5rem
+    
+    @include from($tablet)
+      flex-direction: column
+      align-items: center
+
+    // Update later
+    color: $color-surface
+
+    &--active
+      font-weight: bold
+      background-color: rgba(0,0,0,0.1)
+
+
+  &__page
+    overflow-y: auto
+    z-index: 2
+    transition: transform 0.3s
+    background-color: $color-background
+
+    &--sidebar_shown
+      @include to($mobile)
+        transform: translateX(10rem)
+    
+.nav
+  @extend .card--radiusless
+  position: sticky
+  top: 0
+  overflow-y: auto
+
+  &__menu
+    @extend .button, .button--control, .button--marginless
+    padding: 1rem 0rem
+    margin-right: 1rem
+    margin-left: 1rem
+    
+    @include from($tablet)
+      display: none
+
+  &__search
+    border: none
+    background-color: $color-background
+    padding: 0.5rem
+    outline: none
+    border-radius: 5px
+
+  &__top
+    border-bottom: 1px solid rgba(0,0,0,0.05)
+
+  &__top, &__bottom
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+  &__bottom
+    padding: 0.25rem 2rem
+
+    @include from($tablet)
+      padding: 0.25rem 4rem
+
+    & > div
+      display: flex
+      align-items: center
+
+  &__title
+    display: flex
+    align-items: center
+
+    // --mobile
+    padding: 0rem 1rem
+
+    @include from($tablet)
+      padding: 1rem 4rem
+
+  &__photo
+    width: 1.75rem
+    height: 1.75rem
+    min-width: 1.75rem
+    background-color: rgba(0,0,0,0.1)
+    border-radius: 50%
+    margin-right: 0.5rem
+
+  &__account
+    @extend .button, .button--control
+    margin-right: 2rem
+
+    @include from($tablet)
+      margin-right: 4rem
+
+  &__user
+    @include to($mobile)
+      display: none
+
+// MAIN SECTION
+.main_section
+  padding: 2rem
+  @include from($tablet)
+    padding: 2rem 4rem
+
+.search_cue
+  margin-bottom: 2rem
+  font-size: 1.25em
+  color: $color-control
+
+  b
+    color: #444444
+
+// MAIN GRID
+.main_grid
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr))
+  grid-gap: 1rem
+
+  @include from($tablet)
+
+    grid-gap: 2rem
+
+// PROPERTY ITEM
+.property_item
+  @extend .card
+  display: grid
+  grid-template-rows: auto 1fr auto
+
+  &__header, &__footer
+    display: flex
+    align-items: center
+    justify-content: space-between
+
+  &__switch
+    @extend .button, .button--control
+    margin: 1rem
+    transform: scale(1.25)
+
+  &__site_name
+    margin: 1rem 1.75rem
+
+  &__body
+    padding: 0rem 1.5rem
+  
+  &__table
+    th
+      text-align: left
+      padding-right: 1rem
+    td
+      opacity: 0.75
+  
+
+// USER ITEM
+.user_item
+  @extend .card
+  display: flex
+  align-items: center
+  padding: 1rem
+  cursor: pointer
+
+  &__photo
+    background-color: rgba(0,0,0,0.1)
+    width: 4rem
+    height: 4rem
+    min-width: 4rem
+    border-radius: 50%
+    margin-right: 1rem
+
+.user_modal
+  display: flex
+  flex-direction: column
+  align-items: center
+  &__photo
+    background-color: rgba(0,0,0,0.1)
+    width: 5rem
+    height: 5rem
+    min-width: 4rem
+    border-radius: 50%
+    margin-bottom: 0.5rem
+
+
+// LOGIN
+
+.login_page
+    width: 100vw
+    height: 100vh
+    display: flex
+    align-items: center
+    justify-content: center
+    background-color: $color-primary
+
+    &__main
+        @extend .card
+        padding: 2.5rem
+        width: 100%
+        max-width: 27.5rem
+
+        @include to($mobile)
+            height: 100vh
+            border-radius: 0
+
+    &__heading
+        margin-bottom: 2rem
+        text-align: center
+
+    &__control
+        display: flex
+        justify-content: space-between
+        align-items: center
+        padding-top: 2rem
+
+    a
+      color: $color-primary
+      text-decoration: none
+
+// Debugger
+// *
+//   outline: 1px dashed cornflowerblue
+//   outline-offset: -1px
+//   color: white
+//   background-color: rgba(0,0,0,0.8) !important
+
+// Google Font
+@import url('https://fonts.googleapis.com/css?family=Open+Sans&display=swap')
+
+//======================================= RESPONSIVE =======================================
+
+$mobile: (start: 0px, end: 599px)
+$tablet: (start: 600px, end: 1023px)
+$desktop: (start: 1024px, end: 1439px)
+$hd: (start: 1440px, end: 1920px)
+
+@mixin from($breakpoint)
+  @media screen and (min-width: map-get($breakpoint, start))
+    @content
+
+@mixin to($breakpoint)
+  @media screen and (max-width: map-get($breakpoint, end))
+    @content
+
+
+//======================================= Variables =======================================
+$z-modal: 100
+
+// Variables
+$color-text: #444444
+$color-background: #f3f5f6
+$color-surface: #ffffff
+$color-control: #595959
+
+$color-primary: #2684FF
+
+//======================================= BASE =======================================
+[v-cloak]
+  display: none
+  
+*
+  box-sizing: border-box
+  padding: unset
+  margin: unset
+
+button, select, input, textarea
+  font: inherit
+
+.body
+  margin: 0
+  font-family: 'Raleway','Open Sans', sans-serif
+  background-color: $color-background
+  color: $color-text
+  font-size: 0.925em
+
+
+
+//======================================= HELPERS =======================================
+
+// GENEROUS HELPERS
+.h-unstyle-list
+  padding: 0
+  margin: 0
+  list-style-type: none
+
+.h-unstyle-links
+  &, & *
+    text-decoration: none
+    color: inherit
+
+//======================================= DISPLAY COMPONENTS =======================================
+// card, // button
+.card
+  border-radius: 10px
+  background-color: $color-surface
+  box-shadow: 0px 2px 2px rgba(0,0,0,0.05)
+
+  &--radiusless
+    @extend .card
+    border-radius: 0
+
+.button
+  padding: 0.5rem 1rem
+  margin: 0.25rem 0rem
+  border-radius: 8px
+  border: none
+  font: inherit
+  cursor: pointer
+  outline: none
+  display: flex
+  position: relative
+  align-items: center
+  background-color: transparent
+  border: 1px solid rgba(0,0,0,0.1)
+
+  &:hover
+    border-color: rgba(0,0,0,0.2)
+
+  i + span
+    margin-left: 0.5rem
+
+  input + i
+    position: absolute
+    right: 1.25rem
+
+  &--responsive
+    span
+      @include to($mobile)
+        display: none !important
+
+  
+  &--control
+    background-color: transparent
+    color: $color-control
+    border: none
+
+    &:hover
+      color: $color-text
+
+  &--primary
+    background-color: $color-primary
+    color: white
+    font-weight: bold
+    border: none
+    transition: 0.2s background-color
+
+    &:hover
+      background-color: darken($color-primary, 10)
+    &:active
+      background-color: darken($color-primary, 20)
+
+  &--marginless
+    margin: 0
+  &--paddingless
+    padding: 0
+//======================================= CUSTOM COMPONENTS =======================================
+
+// USER MODAL TABLE
+.user_modal__table
+  margin-top: 1rem
+  border: 1px solid rgba(0,0,0,0.1)
+  padding: 2rem
+  border-radius: 10px
+  th
+    padding-right: 1rem
+    color: $color-control
+  td
+    display: flex
+    align-items: center
+// INPUT GROUP
+.input_group
+  margin-top: 1rem
+  position: relative
+
+  &:focus-within &__label
+    color: $color-primary
+    
+  &__label
+    font-weight: bold
+    font-size: 0.8em
+    position: absolute
+    -webkit-transform: translate(0.25rem, 0.5rem)
+    transform: translate(0.25rem, 0.5rem)
+    padding: 0rem 0.5rem
+    color: $color-control
+  &__input
+    padding: 1.75rem 0.75rem 0.5rem
+    border: none
+    width: 100%
+    border-radius: 10px
+    background-color: $color-background
+    outline: none
+    font: inherit
+    color: inherit
+
+    &::placeholder
+      opacity: 0.5
+
+// MODAL
+.modal_group
+  position: absolute
+  top: 0
+  left: 0
+  z-index: $z-modal
+  width: 100%
+  height: 100%
+  display: flex
+  background-color: rgba(0,0,0,0.3)
+  overflow: auto
+  
+
+  &__modal
+    @extend .card
+    padding: 1rem
+    margin: 1rem
+    width: calc(100% - 2rem)
+    max-height: 100%
+    overflow: auto
+
+    @include from($tablet)
+      max-width: 30rem
+      margin: auto
+
+  &__header, &__footer
+    display: flex
+    align-items: center
+    justify-content: space-between
+
+
+// TAB CONTROL
+.tab_control
+  display: grid
+  height: 100vh
+  grid-template-columns: 1fr
+  @include from($tablet)
+    grid-template-columns: auto 1fr
+
+  // __children
+  &__tab_container
+
+    // --mobile
+    position: fixed
+    width: 100% // CHECK
+    height: 100%  // CHECK
+    z-index: 1
+
+    // --tablet+
+    @include from($tablet)
+      position: relative
+      padding-top: 3rem
+    
+
+    // update later
+    background-color: $color-surface
+    border-right: 1px solid #ddd
+    
+
+  &__tab
+    padding: 1rem
+    display: block
+
+    // --tablet+
+    display: flex
+    align-items: center
+
+    span
+      @include to($mobile)
+        margin-left: 0.5rem
+    
+    @include from($tablet)
+      flex-direction: column
+      align-items: center
+
+    // Update later
+    color: $color-text
+    font-weight: bold
+
+    &--active
+      font-weight: bold
+      color: $color-primary
+
+
+  &__page
+    overflow-y: auto
+    z-index: 2
+    transition: transform 0.3s
+    background-color: $color-background
+
+    &--sidebar_shown
+      @include to($mobile)
+        transform: translateX(10rem)
+    
+.nav
+  @extend .card--radiusless
+  position: sticky
+  top: 0
+  overflow-y: auto
+  z-index: 1
+  
+  &--primary
+    background-color: $color-primary
+    color: white
+
+  &__menu
+    @extend .button, .button--control, .button--marginless
+    padding: 1rem 0rem
+    margin-right: 1rem
+    margin-left: 1rem
+
+    &:hover
+      color: white !important
+    
+    @include from($tablet)
+      display: none
+
+  &__search
+    border: none
+    background-color: none
+    padding: 0.5rem
+    outline: none
+    border-radius: 5px
+
+  &__top
+    border-bottom: 1px solid rgba(0,0,0,0.05)
+
+  &__top, &__bottom
+    display: flex
+    justify-content: space-between
+    align-items: center
+
+  &__bottom
+    padding: 0.25rem 2rem
+
+    @include from($tablet)
+      padding: 0.25rem 4rem
+
+    & > div
+      display: flex
+      align-items: center
+
+  &__title
+    display: flex
+    align-items: center
+
+    // --mobile
+    padding: 0rem 1rem
+
+    @include from($tablet)
+      padding: 1rem 4rem
+
+  &__photo
+    width: 1.75rem
+    height: 1.75rem
+    min-width: 1.75rem
+    background-color: #eee
+    border-radius: 50%
+    margin-right: 0.5rem
+
+  &__account
+    @extend .button, .button--control
+    margin-right: 2rem
+    cursor: pointer
+    color: inherit
+
+    @include from($tablet)
+      margin-right: 4rem
+
+  &__user
+    @include to($mobile)
+      display: none
+
+// MAIN SECTION
+.main_section
+  padding: 2rem
+  @include from($tablet)
+    padding: 2rem 4rem
+
+.search_cue
+  margin-bottom: 2rem
+  font-size: 1.25em
+  color: $color-control
+
+  b
+    color: #444444
+
+// MAIN GRID
+.main_grid
+  display: grid
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr))
+  grid-gap: 1rem
+
+  @include from($tablet)
+
+    grid-gap: 2rem
+
+// PROPERTY ITEM
+.property_item
+  @extend .card
+  display: grid
+  grid-template-rows: auto 1fr auto
+
+  &__header, &__footer
+    display: flex
+    align-items: center
+    justify-content: space-between
+
+  &__header
+    border-bottom: 1px solid #ddd
+
+  &__body
+    margin-top: 1rem
+    margin-bottom: 1rem
+    line-height: 1.5rem
+
+  &__footer
+    border-top: 1px solid #ddd
+
+
+  &__switch
+    @extend .button, .button--control
+    margin: 1rem
+    transform: scale(1.25)
+
+  &__site_name
+    margin: 1rem 1.75rem
+
+  &__body
+    padding: 0rem 1.5rem
+  
+  &__table
+    th
+      text-align: left
+      padding-right: 1rem
+    td
+      opacity: 0.75
+  
+
+// USER ITEM
+.user_item
+  @extend .card
+  display: flex
+  align-items: center
+  padding: 1rem
+  cursor: pointer
+  line-height: 1.5rem
+
+  &__photo
+    background-color: rgba(0,0,0,0.1)
+    width: 4rem
+    height: 4rem
+    min-width: 4rem
+    border-radius: 50%
+    margin-right: 1rem
+
+.user_modal
+  display: flex
+  flex-direction: column
+  align-items: center
+  &__photo
+    background-color: rgba(0,0,0,0.1)
+    width: 5rem
+    height: 5rem
+    min-width: 4rem
+    border-radius: 50%
+    margin-bottom: 0.5rem
+
+
+// LOGIN
+
+.login_page
+    width: 100vw
+    height: 100vh
+    display: flex
+    align-items: center
+    justify-content: center
+    background-color: $color-primary
+
+    &__main
+        @extend .card
+        padding: 2.5rem
+        width: 100%
+        max-width: 27.5rem
+
+        @include to($mobile)
+            height: 100vh
+            border-radius: 0
+
+    &__heading
+        margin-bottom: 2rem
+        text-align: center
+
+    &__control
+        display: flex
+        justify-content: space-between
+        align-items: center
+        padding-top: 2rem
+
+    a
+      color: $color-primary
+      text-decoration: none
+
+// Snackbar
+#snackbar
+  visibility: hidden
+  min-width: 250px
+  margin-left: -125px
+  background-color: #333
+  color: #fff
+  text-align: center
+  border-radius: 8px
+  padding: 16px
+  position: fixed
+  z-index: 10
+  left: 50%
+  bottom: 30px
+
+#snackbar.show
+  visibility: visible; /* Show the snackbar */
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+
+@-webkit-keyframes fadein
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 30px; opacity: 1;}
+
+@keyframes fadein
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+
+@-webkit-keyframes fadeout
+  from {bottom: 30px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+
+@keyframes fadeout
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+
+.slide-up-enter-active, .slide-up-leave-active
+  transition: opacity .3s, transform .3s
+  will-change: opacity, transform
+
+  &:nth-child(2)
+    transition-delay: 0.1s
+  &:nth-child(3)
+    transition-delay: 0.15s
+  &:nth-child(4)
+    transition-delay: 0.2s
+  &:nth-child(5)
+    transition-delay: 0.25s
+  &:nth-child(6)
+    transition-delay: 0.3s
+  &:nth-child(7)
+    transition-delay: 0.35s
+  &:nth-child(8)
+    transition-delay: 0.4s
+  &:nth-child(9)
+    transition-delay: 0.45s
+  
+.slide-up-enter, .slide-up-leave-to /* .fade-leave-active below version 2.1.8 */ 
+  opacity: 0
+  transform: translateY(5rem)
+
+.scale-enter-active, .scale-leave-active
+  transition: transform .3s
+  will-change: transform
+
+.scale-enter, .scale-leave-to /* .fade-leave-active below version 2.1.8 */ 
+  transform: scale(0.7)
+
+.fade-enter-active, .fade-leave-active
+  transition: opacity .3s
+  will-change: opacity
+
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ 
+  opacity: 0

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>R2A - Dashboard</title>
+  <link rel="stylesheet" href="../../style.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<body class="body">
+
+  <main id="app" v-cloak>
+    <div id="snackbar"></div>
+    <div class="tab_control">
+      <div class="tab_control__tab_container">
+        <ul class="h-unstyle-list h-unstyle-links">
+          <li>
+            <a class="tab_control__tab tab_control__tab--active" href="/modules/switch/index.html">
+              <i class="material-icons">toggle_on</i>
+              <span>Switch</span>
+            </a>
+          </li>
+          <li>
+            <a class="tab_control__tab" href="/modules/user/index.html">
+              <i class="material-icons">people</i>
+              <span>User</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="tab_control__page" :class="sidebarSync ? 'tab_control__page--sidebar_shown' : ''">
+        <nav class="nav">
+          <div class="nav__top">
+            <div>
+              <h3 class="nav__title">
+                <button class="nav__menu" @click="sidebarSync = !sidebarSync">
+                  <i class="material-icons">menu</i>
+                </button>
+                Ads Dashboard</h3>
+            </div>
+            <div class="nav__account" style="padding: 0">
+              <div class="nav__photo"></div>
+              <h4 class="nav__user">{{ name }} &nbsp; </h4>
+              <i class="material-icons" @click="logout()">
+                power_settings_new
+              </i>
+            </div>
+          </div>
+          <div class="nav__bottom">
+            <div>
+              <label for="search">
+                <i class="material-icons">search</i>
+              </label>
+
+              <input type="search" name="search" id="search" class="nav__search" placeholder="Search.." v-model="search_filter">
+
+            </div>
+            <div>
+              <button class="button button--primary button--responsive" @click="addModalSync = true">
+                <i class="material-icons">add</i>
+                <span>
+                  New property
+                </span>
+              </button>
+            </div>
+          </div>
+        </nav>
+        <section class="main_section">
+          <div class="search_cue" v-if="search_filter">Showing <b>{{filtered_properties.length}}</b> result(s) for <b>{{search_filter}}</b></div>
+          <div>
+
+            <transition-group name="slide-up" tag="div" class="main_grid">
+              <div class="property_item" v-for="property in filtered_properties" :key="property._id">
+                <div class="property_item__header">
+                  <h4 class="property_item__site_name">{{ property.site_name }}</h4>
+                  <button class="property_item__switch" @click="toggle(property._id)">
+                    <i class="material-icons" :style="{color: property.active ? '#20cf9a' : '#aaaaaa'}">
+                      {{ property.active ? 'toggle_on' : 'toggle_off' }}
+                    </i>
+                  </button>
+                </div>
+                <div class="property_item__body">
+                  <table class="property_item__table">
+                    <tr>
+                      <th>Row Key:</th>
+                      <td>{{ property.row_key }}</td>
+                    </tr>
+                    <tr>
+                      <th>Site URL:</th>
+                      <td>{{ property.site_url }}</td>
+                    </tr>
+                    <tr>
+                      <th>Ads Location:</th>
+                      <td>{{ property.ads_location }}</td>
+                    </tr>
+                    <tr>
+                      <th>Status: </th>
+                      <td :style="{color: property.active ? '#20cf9a' : '#dd4444', opacity: 1}">
+                        <transition name="fade" mode="out-in">
+                            <b :key="property.active">{{ property.active ? 'ON' : 'OFF' }}</b>
+                        </transition>
+                        
+                      </td>
+                    </tr>
+                    <tr>
+                      <th>Reason:</th>
+                      <td>{{ property.reason }}</td>
+                    </tr>
+                    <tr>
+                      <th>Updated:</th>
+                      <td>{{ property.updated }}</td>
+                    </tr>
+                  </table>
+                </div>
+                <div class="property_item__footer">
+                  <div></div>
+                  <div style="display: flex; align-items: center">
+                    <button class="button button--control" style="padding: 0.5rem" @click="viewProperty(property._id); editModalSync = true">
+                      <i class="material-icons">edit</i>
+                    </button>
+                    <button class="button button--control" @click="deleteProperty(property._id)">
+                      <i class="material-icons">delete</i>
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+
+          </div>
+          </transition>
+
+        </section>
+
+      </div>
+    </div>
+
+
+
+
+
+    <transition name="fade">
+      <div class="modal_group" v-if="addModalSync">
+        <transition name="scale" appear>
+          <div class="modal_group__modal">
+            <form @submit.prevent="addProperty(); addModalSync = false;;">
+              <div class="modal_group__header">
+                <h3>New Property</h3>
+                <button class="button button--marginless" @click="addModalSync = false">
+                  <i class="material-icons">
+                    close
+                  </i>
+                  <span>Close</span>
+                </button>
+              </div>
+              <div class="modal_group__body">
+
+                <div class="input_group">
+                  <label for="Category" class="input_group__label">
+                    Category
+                  </label>
+                  <select class="input_group__input" id="type" v-model="selected_property.category" required>
+                    <option value="Lifestyle">Lifestyle</option>
+                    <option value="Entertainment">Entertainment</option>
+                    <option value="News">News</option>
+                    <option value="Sports">Sports</option>
+                  </select>
+                </div>
+                <div class="input_group">
+                  <label for="site_name" class="input_group__label">
+                    Site name
+                  </label>
+                  <input type="text" class="input_group__input" id="site_name" placeholder="ABS-CBN News" v-model="selected_property.site_name"
+                    required>
+                </div>
+                <div class="input_group">
+                  <label for="row_key" class="input_group__label">
+                    Row Key
+                  </label>
+                  <input type="text" class="input_group__input" id="row_key" placeholder="abs-cbn-news" v-model="selected_property.row_key"
+                    required>
+                </div>
+                <div class="input_group">
+                  <label for="site_url" class="input_group__label">
+                    Site URL
+                  </label>
+                  <input type="url" class="input_group__input" id="site_url" placeholder="https://news.abs-cbn.com"
+                    v-model="selected_property.site_url" required>
+                </div>
+                <div class="input_group">
+                  <label for="ads_location" class="input_group__label">
+                    Ads Location
+                  </label>
+                  <select class="input_group__input" id='ads_location' v-model="selected_property.ads_location"
+                    required>
+                    <option value="Banner">Banner</option>
+                    <option value="MREC">MREC</option>
+                  </select>
+                </div>
+
+
+              </div>
+              <div class="modal_group__footer">
+                <div></div>
+                <div>
+                  <button type="submit" class="button button--primary" style="margin-top: 1rem">Create new property</button>
+                </div>
+
+              </div>
+            </form>
+          </div>
+        </transition>
+      </div>
+    </transition>
+    <transition name="fade">
+      <div class="modal_group" v-if="editModalSync">
+        <transition name="scale" appear>
+          <div class="modal_group__modal">
+            <div class="modal_group__header">
+              <h3>Edit Property</h3>
+              <button class="button button--marginless" @click="editModalSync = false">
+                <i class="material-icons">
+                  close
+                </i>
+                <span>Close</span>
+              </button>
+            </div>
+            <div class="modal_group__body">
+
+              <div class="input_group">
+                <label for="Category" class="input_group__label">
+                  Category
+                </label>
+                <select class="input_group__input" id="type" v-model="selected_property.category" required>
+                  <option value="Lifestyle">Lifestyle</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="News">News</option>
+                  <option value="Sports">Sports</option>
+                </select>
+              </div>
+              <div class="input_group">
+                <label for="site_name" class="input_group__label">
+                  Site name
+                </label>
+                <input type="text" class="input_group__input" id="site_name" placeholder="ABS-CBN News" v-model="selected_property.site_name"
+                  required>
+              </div>
+              <div class="input_group">
+                <label for="row_key" class="input_group__label">
+                  Row Key
+                </label>
+                <input type="text" class="input_group__input" id="row_key" placeholder="abs-cbn-news" v-model="selected_property.row_key"
+                  required>
+              </div>
+              <div class="input_group">
+                <label for="site_url" class="input_group__label">
+                  Site URL
+                </label>
+                <input type="url" class="input_group__input" id="site_url" placeholder="https://news.abs-cbn.com"
+                  v-model="selected_property.site_url" required>
+              </div>
+              <div class="input_group">
+                <label for="ads_location" class="input_group__label">
+                  Ads Location
+                </label>
+                <select class="input_group__input" id='ads_location' v-model="selected_property.ads_location" required>
+                  <option value="Banner">Banner</option>
+                  <option value="MREC">MREC</option>
+                </select>
+              </div>
+
+
+            </div>
+            <div class="modal_group__footer">
+              <div></div>
+              <button class="button button--primary" style="margin-top: 1rem" @click="updateSelectedProperty(); editModalSync = false">Update</button>
+
+
+            </div>
+        </transition>
+      </div>
+    </transition>
+  </main>
+
+  <script src="./app.js" type="module"></script>
+
+
+</body>
+
+</html>
