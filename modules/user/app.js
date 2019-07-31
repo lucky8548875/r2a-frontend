@@ -16,9 +16,13 @@ new Vue({
     mounted: function () {
         this.loadUsers()
 
-        if(!this.isAdmin){
+        if (!localStorage.getItem('credentials')) {
+            window.location = '/modules/login'
+        }
+        else if(!this.isAdmin){
             window.location = '/modules/switch'
         }
+        
     }
 
 })

@@ -5,6 +5,7 @@ var data = {
 
     // List of user(s)
     users: [],
+    logs: [],
 
     // Selected user (for two-way binding)
     selected_user: {
@@ -22,6 +23,7 @@ var data = {
     addModalSync: false,
     editModalSync: false,
     sidebarSync: false,
+    logSync: false,
 
     search_filter: ""
 

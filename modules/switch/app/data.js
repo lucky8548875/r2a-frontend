@@ -5,6 +5,7 @@ var data = {
 
     // List of properties
     properties: [],
+    logs: [],
 
     // selected_property
     selected_property: {
@@ -23,6 +24,8 @@ var data = {
     addModalSync: false,
     editModalSync: false,
     sidebarSync: false,
+    logSync: false,
+    analyticSync: false,
 
     search_filter: ""
 

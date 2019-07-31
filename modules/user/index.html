@@ -42,12 +42,12 @@
                 Users</h3>
             </div>
             <div class="nav__account" style="padding: 0">
-                <div class="nav__photo"></div>
-                <h4 class="nav__user">{{ name }} &nbsp; </h4>
-                <i class="material-icons" @click="logout()">
-                  power_settings_new
-                </i>
-              </div>
+              <div class="nav__photo"></div>
+              <h4 class="nav__user">{{ name }} &nbsp; </h4>
+              <i class="material-icons" @click="logout()">
+                power_settings_new
+              </i>
+            </div>
           </div>
           <div class="nav__bottom">
             <div>
@@ -59,7 +59,13 @@
 
             </div>
             <div>
-
+                <button class="button button--responsive" @click="logSync = true">
+                    <i class="material-icons">list</i>
+                    <span>
+                      Logs
+                    </span>
+                  </button>
+                  &nbsp;&nbsp;
               <button class="button button--primary button--responsive" @click="addModalSync = true">
                 <i class="material-icons">person_add</i>
                 <span>
@@ -76,7 +82,7 @@
             <transition-group name="slide-up" tag="div" class="main_grid">
               <div @click="viewUser(user._id); editModalSync = true" class="user_item" v-for="user in filtered_users"
                 :key="user._id">
-                <div class="user_item__photo" :style="`background: url('${user.photo}')`">
+                <div class="user_item__photo">
                 </div>
                 <div>
 
@@ -97,6 +103,41 @@
 
       </div>
     </div>
+    <transition name="fade">
+      <div class="modal_group" v-if="logSync">
+        <transition name="scale" appear>
+          <div class="modal_group__modal" style="max-width: 50rem">
+            <div class="modal_group__header">
+              <h3>Logs</h3>
+              <a class="button button--marginless" @click="logSync = false">
+                <i class="material-icons">
+                  close
+                </i>
+                <span>Close</span>
+              </a>
+            </div>
+            <div class="modal_group__body">
+              <table class="logs" cellspacing="0">
+                <tr>
+                  <th>Name</th>
+                  <th>Target</th>
+                  <th>Action</th>
+                  <th>Date</th>
+                </tr>
+                <tr v-for="log in logs">
+                  <td>{{log.name}}</td>
+                  <td>{{log.target}}</td>
+                  <td>{{log.action}}</td>
+                  <td>{{log.date}}</td>
+                </tr>
+              </table>
+            </div>
+            <div class="modal_group__footer"></div>
+
+          </div>
+        </transition>
+      </div>
+    </transition>
     <transition name="fade" appear>
       <div class="modal_group" v-if="addModalSync">
         <transition name="scale" appear>
@@ -163,6 +204,7 @@
               <div class="modal_group__footer">
                 <div></div>
                 <div>
+                  
                   <button type="submit" class="button button--primary" style="margin-top: 1rem">Create new user</button>
                 </div>
 

@@ -24,7 +24,7 @@
             </a>
           </li>
           <li>
-            <a class="tab_control__tab" href="/modules/user/index.html">
+            <a class="tab_control__tab" href="/modules/user/index.html" v-if="isAdmin">
               <i class="material-icons">people</i>
               <span>User</span>
             </a>
@@ -55,10 +55,17 @@
                 <i class="material-icons">search</i>
               </label>
 
-              <input type="search" name="search" id="search" class="nav__search" placeholder="Search.." v-model="search_filter">
+              <input type="search" name="search" id="search" class="nav__search" placeholder="Enter keywords" v-model="search_filter">
 
             </div>
             <div>
+              <button class="button button--responsive" @click="logSync = true">
+                <i class="material-icons">list</i>
+                <span>
+                  Logs
+                </span>
+              </button>
+              &nbsp;&nbsp;
               <button class="button button--primary button--responsive" @click="addModalSync = true">
                 <i class="material-icons">add</i>
                 <span>
@@ -82,7 +89,7 @@
                     </i>
                   </button>
                 </div>
-                <div class="property_item__body">
+                <a class="property_item__body"  @click="viewProperty(property._id); analyticSync = true" style="cursor: pointer">
                   <table class="property_item__table">
                     <tr>
                       <th>Row Key:</th>
@@ -90,7 +97,9 @@
                     </tr>
                     <tr>
                       <th>Site URL:</th>
-                      <td>{{ property.site_url }}</td>
+                      <td>
+                        <a :href="property.site_url" target="_blank" style="text-decoration: none; color: #20cf9a; opacity: 1; font-weight: bold; font-size: 0.9rem" >{{ property.site_url }}</a>
+                        </td>
                     </tr>
                     <tr>
                       <th>Ads Location:</th>
@@ -100,9 +109,9 @@
                       <th>Status: </th>
                       <td :style="{color: property.active ? '#20cf9a' : '#dd4444', opacity: 1}">
                         <transition name="fade" mode="out-in">
-                            <b :key="property.active">{{ property.active ? 'ON' : 'OFF' }}</b>
+                          <b :key="property.active">{{ property.active ? 'ON' : 'OFF' }}</b>
                         </transition>
-                        
+
                       </td>
                     </tr>
                     <tr>
@@ -114,7 +123,7 @@
                       <td>{{ property.updated }}</td>
                     </tr>
                   </table>
-                </div>
+                </a>
                 <div class="property_item__footer">
                   <div></div>
                   <div style="display: flex; align-items: center">
@@ -138,9 +147,110 @@
       </div>
     </div>
 
+    <transition name="fade">
+      <div class="modal_group" v-if="analyticSync">
+        <transition name="scale" appear>
+          <div class="modal_group__modal">
+            <div class="modal_group__header">
+              <div style="padding: 0rem 1rem">
+                <br>
+                <h3>{{selected_property.site_name}}</h3>
+                <span style="opacity: 0.75">{{selected_property.row_key}}</span>
+              </div>
+              <a class="button button--marginless" @click="analyticSync = false">
+                  <i class="material-icons">
+                    close
+                  </i>
+                  <span>Close</span>
+                </a>
+            </div>
+            <div class="modal_group__body" style="margin-top: 1rem; padding: 1rem">
+              <select name="" id="" style="margin-bottom: 1rem; border: none; padding: 0.5rem 0rem; border-radius: 8px; background-color: transparent">
+                <option value="">Last 30 days</option>
+              </select>
+              <div style="display: flex">
+                <div>
+                  <h1>3105</h1>
+                  <p>Clicks</p>
+                </div>
+                <br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <br>
+                <div>
+                  <h1 style="color: #0074d9">+200</h1>
+                  <p>Since last 30 days</p>
+                </div>                
+              </div>
+              
+              <svg viewBox="0 0 500 200" class="chart" style="margin-top: 1rem;">
+                  <polyline
+                     fill="none"
+                     stroke="#0074d9"
+                     stroke-width="5"
+                     stroke-linecap="round"
+                     points="
+                       5,160
+                       120,120
+                       160,140
+                       200, 80
+                       250,140
+                       300,100
+                       350,120
+                       450,5
+                       "/>
+                </svg>
+                <div style="display: flex; justify-content: space-between">
+                  <span>Jul 1</span>
+                  <span>Jul 5</span>
+                  <span>Jul 10</span>
+                  <span>Jul 15</span>
+                  <span>Jul 20</span>
+                  <span>Jul 25</span>
+                  <span>Jul 30</span>
+                </div>
+            </div>
+            <div class="modal_group__footer">
 
+            </div>
+          </div>
+        </transition>
+      </div>
+    </transition>
+    <transition name="fade">
+      <div class="modal_group" v-if="logSync">
+        <transition name="scale" appear>
+          <div class="modal_group__modal" style="max-width: 50rem">
+            <div class="modal_group__header">
+              <h3>Logs</h3>
+              <a class="button button--marginless" @click="logSync = false">
+                <i class="material-icons">
+                  close
+                </i>
+                <span>Close</span>
+              </a>
+            </div>
+            <div class="modal_group__body">
+              <table class="logs" cellspacing="0">
+                <tr>
+                  <th>Name</th>
+                  <th>Site name</th>
+                  <th>Action</th>
+                  <th>Date</th>
+                </tr>
+                <tr v-for="log in logs">
+                  <td>{{log.name}}</td>
+                  <td>{{log.site_name}}</td>
+                  <td>{{log.action}}</td>
+                  <td>{{log.date}}</td>
+                </tr>
+              </table>
+            </div>
+            <div class="modal_group__footer"></div>
 
-
+          </div>
+        </transition>
+      </div>
+    </transition>
 
     <transition name="fade">
       <div class="modal_group" v-if="addModalSync">
@@ -149,12 +259,12 @@
             <form @submit.prevent="addProperty(); addModalSync = false;;">
               <div class="modal_group__header">
                 <h3>New Property</h3>
-                <button class="button button--marginless" @click="addModalSync = false">
+                <a class="button button--marginless" @click="addModalSync = false">
                   <i class="material-icons">
                     close
                   </i>
                   <span>Close</span>
-                </button>
+                </a>
               </div>
               <div class="modal_group__body">
 
@@ -196,8 +306,13 @@
                   </label>
                   <select class="input_group__input" id='ads_location' v-model="selected_property.ads_location"
                     required>
-                    <option value="Banner">Banner</option>
-                    <option value="MREC">MREC</option>
+                    <option value="Banner">Banner (468 x 60)</option>
+                    <option value="Skyscraper">Skyscraper (120 x 600)</option>
+                    <option value="Big Banner">Big Banner (250 x 250)</option>
+                    <option value="Rectangle">Rectangle (300 x 100)</option>
+                    <option value="Vertical Rectangle">Vertical Rectangle (240 x 400)</option>
+                    <option value="Wide Skyscraper">Wide Skyscraper (160 x 600)</option>
+                    <option value="Leaderboard">Leaderboard (728 x</option>
                   </select>
                 </div>
 
@@ -215,6 +330,7 @@
         </transition>
       </div>
     </transition>
+
     <transition name="fade">
       <div class="modal_group" v-if="editModalSync">
         <transition name="scale" appear>
@@ -267,8 +383,13 @@
                   Ads Location
                 </label>
                 <select class="input_group__input" id='ads_location' v-model="selected_property.ads_location" required>
-                  <option value="Banner">Banner</option>
-                  <option value="MREC">MREC</option>
+                  <option value="Banner">Banner (468 x 60)</option>
+                  <option value="Skyscraper">Skyscraper (120 x 600)</option>
+                  <option value="Big Banner">Big Banner (250 x 250)</option>
+                  <option value="Rectangle">Rectangle (300 x 100)</option>
+                  <option value="Vertical Rectangle">Vertical Rectangle (240 x 400)</option>
+                  <option value="Wide Skyscraper">Wide Skyscraper (160 x 600)</option>
+                  <option value="Leaderboard">Leaderboard (728 x</option>
                 </select>
               </div>
 
@@ -277,12 +398,11 @@
             <div class="modal_group__footer">
               <div></div>
               <button class="button button--primary" style="margin-top: 1rem" @click="updateSelectedProperty(); editModalSync = false">Update</button>
-
-
             </div>
         </transition>
       </div>
     </transition>
+
   </main>
 
   <script src="./app.js" type="module"></script>

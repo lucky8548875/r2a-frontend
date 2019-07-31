@@ -682,6 +682,25 @@ button, select, input, textarea {
   padding: 0;
 }
 
+.logs {
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.logs th {
+  padding-bottom: 1rem;
+}
+
+.logs td {
+  border-top: 1px solid #777;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.logs td, .logs th {
+  padding-right: 2rem;
+}
+
 .user_modal__table {
   margin-top: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.1);

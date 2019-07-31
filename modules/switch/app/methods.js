@@ -61,13 +61,21 @@ var methods = {
         // })
         fetch('http://localhost:3000/api/switch')
        
-        .then(response => {
-            
-            // this.users = response.json();
+        .then(response => { 
             return response.json()
         })
         .then(response => {
             this.properties = response
+            
+        });
+
+        fetch('http://localhost:3000/api/logs')
+       
+        .then(response => { 
+            return response.json()
+        })
+        .then(response => {
+            this.logs = response
             
         });
 
@@ -107,8 +115,24 @@ var methods = {
         },
         body: JSON.stringify(values)})
         .then(response => {
-                this.loadProperties()
+                
                 this.showSnackbar('Added successfully')
+                fetch('http://localhost:3000/api/logs',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: JSON.stringify({
+                        name: JSON.parse(window.localStorage.getItem('credentials')).name,
+                        site_name: values.site_name,
+                        action: 'Create new property',
+                        date: new Date().toLocaleString()
+
+                    })
+
+                }).then(response => {
+                    this.loadProperties()
+                })
             
         })
     },
@@ -163,9 +187,23 @@ var methods = {
                 values
             })})
             .then(response => {
-                    this.loadProperties()
                     this.showSnackbar('Updated successfully')
-                
+                    fetch('http://localhost:3000/api/logs',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: JSON.stringify({
+                        name: JSON.parse(window.localStorage.getItem('credentials')).name,
+                        site_name: this.properties.find(property => property._id == _id).site_name,
+                        action: values.reason,
+                        date: new Date().toLocaleString()
+
+                    })
+
+                }).then(response => {
+                    this.loadProperties()
+                })
             })
 
     },
@@ -216,8 +254,24 @@ var methods = {
                 _id
             })})
             .then(response => {
-                    this.loadProperties()
+                    
                     this.showSnackbar('Removed successfully')
+                    fetch('http://localhost:3000/api/logs',{
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: JSON.stringify({
+                        name: JSON.parse(window.localStorage.getItem('credentials')).name,
+                        site_name: this.properties.find(property => property._id == _id).site_name,
+                        action: 'Delete property',
+                        date: new Date().toLocaleString()
+
+                    })
+
+                }).then(response => {
+                    this.loadProperties()
+                })
                 
             })
         }
@@ -243,7 +297,8 @@ var methods = {
 
     toggle (_id) {
         this.updateProperty(_id, {
-            active: !this.properties.find(property => property._id === _id).active
+            active: !this.properties.find(property => property._id === _id).active,
+            reason: `Switch ${!this.properties.find(property => property._id === _id).active ? 'ON' : 'OFF'}`
         })
     },
 
